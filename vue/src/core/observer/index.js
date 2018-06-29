@@ -29,6 +29,7 @@ export function toggleObserving (value: boolean) {
 }
 
 /**
+ * 每个被观察到对象被附加上观察者实例，一旦被添加，观察者将为目标对象加上getter\setter属性，进行依赖收集以及调度更新。
  * Observer class that is attached to each observed
  * object. Once attached, the observer converts the target
  * object's property keys into getter/setters that
@@ -43,11 +44,14 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 将Observer实例绑定到data的__ob__属性上面去，observe的时候会先检测是否已经有__ob__对象存放Observer实例了，def方法保证不可枚举
     def(value, '__ob__', this)
+    // 如果是数组，将修改后可以截获响应的数组方法替换掉该数组的原型中的原生方法，达到监听数组数据变化响应的效果。
     if (Array.isArray(value)) {
+    // 这里如果当前浏览器支持__proto__属性，则直接覆盖当前数组对象原型上的原生数组方法，如果不支持该属性，则直接覆盖数组对象的原型。
       const augment = hasProto
-        ? protoAugment
-        : copyAugment
+        ? protoAugment          // 直接覆盖原型的方法来修改目标对象
+        : copyAugment           // 定义（覆盖）目标对象或数组的某一个方法
       augment(value, arrayMethods, arrayKeys)
       this.observeArray(value)
     } else {
@@ -66,6 +70,7 @@ export class Observer {
   }
 
   /**
+   * 对一个数组的每一个成员进行observe
    * Observe a list of Array items.
    */
   observeArray (items: Array<any>) {
@@ -78,6 +83,7 @@ export class Observer {
 // helpers
 
 /**
+ * 直接覆盖原型的方法来修改目标对象或数组
  * Augment an target Object or Array by intercepting
  * the prototype chain using __proto__
  */
@@ -88,6 +94,7 @@ function protoAugment (target, src: Object, keys: any) {
 }
 
 /**
+ * 定义（覆盖）目标对象或数组的某一个方法
  * Augment an target Object or Array by defining
  * hidden properties.
  */
@@ -100,6 +107,7 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
 }
 
 /**
+ * 尝试创建一个Observer实例（__ob__），如果成功创建Observer实例则返回新的Observer实例，如果已有Observer实例则返回现有的Observer实例。
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
@@ -109,9 +117,12 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     return
   }
   let ob: Observer | void
+  // 这里用__ob__这个属性来判断是否已经有Observer实例，如果没有Observer实例则会新建一个Observer实例并赋值给__ob__这个属性，如果已有Observer实例则直接返回该Observer实例
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
+    // 这里的判断是为了确保value是单纯的对象，而不是函数或者是Regexp等情况。
+    // 而且该对象在shouldConvert的时候才会进行Observer。这是一个标识位，避免重复对value进行Observer
     shouldObserve &&
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
@@ -121,12 +132,13 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     ob = new Observer(value)
   }
   if (asRootData && ob) {
-    ob.vmCount++
+    ob.vmCount++              // 如果是根数据则计数，后面Observer中的observe的asRootData非true
   }
   return ob
 }
 
 /**
+ * 为对象defineProperty上在变化时通知的属性
  * Define a reactive property on an Object.
  */
 export function defineReactive (
@@ -136,14 +148,14 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
-  const dep = new Dep()
+  const dep = new Dep()         // 在每个响应式键值的闭包中定义一个dep对象
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
   }
 
-  // cater for pre-defined getter/setters
+  // 如果之前该对象已经预设了getter以及setter函数则将其取出来，新定义的getter/setter中会将其执行，保证不会覆盖之前已经定义的getter/setter
   const getter = property && property.get
   const setter = property && property.set
   if ((!getter || setter) && arguments.length === 2) {
@@ -155,13 +167,14 @@ export function defineReactive (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
-      const value = getter ? getter.call(obj) : val
-      if (Dep.target) {                     // 依赖收集的过程
-        dep.depend()
-        if (childOb) {
+      const value = getter ? getter.call(obj) : val         // 如果原本对象拥有getter方法则执行
+      if (Dep.target) {                                     // 依赖收集的过程
+        dep.depend()                                        // 进行依赖收集
+        if (childOb) {           // 子对象进行依赖收集，其实就是将同一个watcher观察者实例放进了两个depend中
+                                 // ，一个是正在本身闭包中的depend，另一个是子元素的depend
           childOb.dep.depend()
           if (Array.isArray(value)) {
-            dependArray(value)
+            dependArray(value)                  // 是数组则需要对每一个成员都进行依赖收集，如果数组的成员还是数组，则递归。
           }
         }
       }

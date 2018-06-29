@@ -18,11 +18,11 @@ import type { SimpleSet } from '../util/index'
 let uid = 0
 
 /**
+ * 一个解析表达式，进行依赖收集的观察者，同时在表达式数据变更时触发回调函数。它被用于$watch api以及指令
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
- * 一个解析表达式，进行依赖收集的观察者，同时在表达式数据变更时触发回调函数。它被用于$watch api以及指令
  */
 export default class Watcher {
   vm: Component

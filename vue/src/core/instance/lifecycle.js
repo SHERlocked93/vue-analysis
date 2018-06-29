@@ -9,6 +9,7 @@ import { resolveSlots } from './render-helpers/resolve-slots'
 import { toggleObserving } from '../observer/index'
 import { pushTarget, popTarget } from '../observer/dep'
 
+// noinspection ES6CheckImport
 import {
   warn,
   noop,
@@ -48,6 +49,10 @@ export function initLifecycle (vm: Component) {
   vm._isBeingDestroyed = false
 }
 
+/**
+ * 在prototype上挂载_update(),$forceUpdate(),$destroy()
+ * @param Vue Vue类
+ */
 export function lifecycleMixin (Vue: Class<Component>) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {      // 调用此方法去更新视图
     const vm: Component = this
@@ -187,10 +192,10 @@ export function mountComponent (
     }
   }
 
+  // 渲染watcher,Watcher 在这里起到两个作用，一个是初始化的时候会执行回调函数，另一个是当 vm 实例中的监测的数据发生变化的时候执行回调函数
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
-  // 渲染watcher,Watcher 在这里起到两个作用，一个是初始化的时候会执行回调函数，另一个是当 vm 实例中的监测的数据发生变化的时候执行回调函数
   new Watcher(vm, updateComponent, noop, {
     before () {
       if (vm._isMounted) {
