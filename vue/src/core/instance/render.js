@@ -15,11 +15,12 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 
 import { isUpdatingChildComponent } from './lifecycle'
 
-export function initRender (vm: Component) {
+/* 初始化render */
+export function initRender(vm: Component) {
   vm._vnode = null // the root of the child tree
   vm._staticTrees = null // v-once cached trees
   const options = vm.$options
-  const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
+  const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree 父树中的占位符节点
   const renderContext = parentVnode && parentVnode.context
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
   vm.$scopedSlots = emptyObject
@@ -27,15 +28,17 @@ export function initRender (vm: Component) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
+  /* 生成vnode，将createElement函数绑定到该实例上，该vm存在闭包中，不可修改，vm实例则固定。这样我们就可以得到正确的上下文渲染，render中用的版本 */
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
-  vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)         // 使用这个方法生成vnode
-
+  /* 常规方法被用于公共版本，被用来作为用户界面的渲染方法 */
+  vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
+  
   // $attrs & $listeners are exposed for easier HOC creation.
   // they need to be reactive so that HOCs using them are always updated
   const parentData = parentVnode && parentVnode.data
-
+  
   /* istanbul ignore else */
   if (process.env.NODE_ENV !== 'production') {
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, () => {
@@ -50,18 +53,19 @@ export function initRender (vm: Component) {
   }
 }
 
-export function renderMixin (Vue: Class<Component>) {
+export function renderMixin(Vue: Class<Component>) {
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype)
-
-  Vue.prototype.$nextTick = function (fn: Function) {
+  
+  Vue.prototype.$nextTick = function(fn: Function) {
     return nextTick(fn, this)
   }
-
-  Vue.prototype._render = function (): VNode {
+  
+  /* _render渲染函数，返回一个VNode节点 */
+  Vue.prototype._render = function(): VNode {
     const vm: Component = this
     const { render, _parentVnode } = vm.$options
-
+    
     // reset _rendered flag on slots for duplicate slot check
     if (process.env.NODE_ENV !== 'production') {
       for (const key in vm.$slots) {
@@ -69,17 +73,18 @@ export function renderMixin (Vue: Class<Component>) {
         vm.$slots[key]._rendered = false
       }
     }
-
+    
     if (_parentVnode) {
       vm.$scopedSlots = _parentVnode.data.scopedSlots || emptyObject
     }
-
+    
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
     vm.$vnode = _parentVnode
     // render self
     let vnode
     try {
+      /* 调用render函数，返回一个VNode节点 */
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)

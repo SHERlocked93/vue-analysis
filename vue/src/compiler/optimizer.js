@@ -18,13 +18,22 @@ const genStaticKeysCached = cached(genStaticKeys)
  *    create fresh nodes for them on each re-render;
  * 2. Completely skip them in the patching process.
  */
+/*
+ 将AST树进行优化
+ 优化的目标：生成模板AST树，检测不需要进行DOM改变的静态子树。
+ 一旦检测到这些静态树，我们就能做以下这些事情：
+ 1.把它们变成常数，这样我们就再也不需要每次重新渲染时创建新的节点了。
+ 2.在patch的过程中直接跳过。
+*/
 export function optimize (root: ?ASTElement, options: CompilerOptions) {
   if (!root) return
-  isStaticKey = genStaticKeysCached(options.staticKeys || '')
-  isPlatformReservedTag = options.isReservedTag || no
+  isStaticKey = genStaticKeysCached(options.staticKeys || '')   // 标记是否为静态属性
+  isPlatformReservedTag = options.isReservedTag || no     // 标记是否是平台保留的标签
   // first pass: mark all non-static nodes.
+  /* 处理所有非静态节点 */
   markStatic(root)
   // second pass: mark static roots.
+  /* 处理static root */
   markStaticRoots(root, false)
 }
 

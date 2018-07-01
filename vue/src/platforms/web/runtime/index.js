@@ -35,8 +35,8 @@ Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
 Vue.prototype.$mount = function (
-  el?: string | Element,
-  hydrating?: boolean
+  el?: string | Element,    // 挂载的元素
+  hydrating?: boolean       // 服务端渲染相关参数
 ): Component {
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating)          // 位于core/instance/lifecycle.js

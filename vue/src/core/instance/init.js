@@ -55,7 +55,7 @@ export function initMixin(Vue: Class<Component>) {
     initRender(vm)                  // 初始化render  src/core/instance/render.js
     callHook(vm, 'beforeCreate')
     initInjections(vm)              // 初始化注入值 before data/props src/core/instance/inject.js
-    initState(vm)                   // 挂载 data/props
+    initState(vm)                   // 挂载 data/props/methods/watcher/computed
     initProvide(vm)                 // 初始化Provide after data/props
     callHook(vm, 'created')
     
