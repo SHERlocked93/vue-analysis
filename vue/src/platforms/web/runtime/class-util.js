@@ -10,7 +10,6 @@ export function addClass (el: HTMLElement, cls: ?string) {
     return
   }
 
-  /* istanbul ignore else */
   if (el.classList) {
     if (cls.indexOf(' ') > -1) {
       cls.split(/\s+/).forEach(c => el.classList.add(c))
@@ -35,7 +34,6 @@ export function removeClass (el: HTMLElement, cls: ?string) {
     return
   }
 
-  /* istanbul ignore else */
   if (el.classList) {
     if (cls.indexOf(' ') > -1) {
       cls.split(/\s+/).forEach(c => el.classList.remove(c))

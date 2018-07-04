@@ -8,7 +8,6 @@ export function resolveTransition (def?: string | Object): ?Object {
   if (!def) {
     return
   }
-  /* istanbul ignore else */
   if (typeof def === 'object') {
     const res = {}
     if (def.css !== false) {

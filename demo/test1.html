@@ -5,13 +5,40 @@
   <script src="../vue/dist/vue.js"></script>
 </head>
 <body>
-  <div id="demo">
-    <template>
-      <span>{{text.intext}}</span>
-    </template>
+  <div id="app">
+    {{ name }}
+    <button @click='change'>change</button>
+    <button @click='changeLast'>change last name</button>
   </div>
   
-  
-  <script src="app.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          firstName: ' Qian ',
+          lastName: ' Yu ',
+          useless: 1
+        }
+      },
+      methods: {
+        change() {
+          this.useless++
+        },
+        
+        changeLast() {
+          this.lastName = ' Zhang '
+        }
+      },
+      computed: {
+        name() {
+          if (this.useless > 1) {
+            return this.firstName + ',' + this.lastName
+          }
+          return 'Please click change'
+        }
+      }
+    })
+  </script>
 </body>
 </html>

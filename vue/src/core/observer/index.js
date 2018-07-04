@@ -107,7 +107,8 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
 }
 
 /**
- * 尝试创建一个Observer实例（__ob__），如果成功创建Observer实例则返回新的Observer实例，如果已有Observer实例则返回现有的Observer实例。
+ * 尝试创建一个Observer实例（__ob__），如果成功创建Observer实例则返回新的Observer实例
+ * ，如果已有Observer实例则返回现有的Observer实例。
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.

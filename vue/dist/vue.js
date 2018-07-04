@@ -3337,6 +3337,7 @@ function initState (vm) {
   } else {
     observe(vm._data = {}, true /* asRootData */);
   }
+  debugger
   if (opts.computed) { initComputed(vm, opts.computed); }
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch);
@@ -3430,7 +3431,6 @@ function initData (vm) {
     }
   }
   // observe data
-  debugger
   observe(data, true /* asRootData */);
 }
 

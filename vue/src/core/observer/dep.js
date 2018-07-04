@@ -10,34 +10,34 @@ let uid = 0
  * directives subscribing to it.
  */
 export default class Dep {
-  static target: ?Watcher;
-  id: number;
-  subs: Array<Watcher>;           // 观察者集合
-
-  constructor () {
+  static target: ?Watcher        // 当前是谁在进行依赖的收集
+  id: number
+  subs: Array<Watcher>           // 观察者集合
+  
+  constructor() {
     this.id = uid++
     this.subs = []
   }
   
   /* 添加一个观察者对象 */
-  addSub (sub: Watcher) {
+  addSub(sub: Watcher) {
     this.subs.push(sub)
   }
   
   /* 移除一个观察者对象 */
-  removeSub (sub: Watcher) {
+  removeSub(sub: Watcher) {
     remove(this.subs, sub)
   }
   
   /* 依赖收集，当存在Dep.target的时候添加观察者对象 */
-  depend () {
+  depend() {
     if (Dep.target) {
       Dep.target.addDep(this)
     }
   }
   
   /* 通知所有订阅者 */
-  notify () {
+  notify() {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
     for (let i = 0, l = subs.length; i < l; i++) {
@@ -54,12 +54,12 @@ Dep.target = null
 const targetStack = []
 
 /* 将watcher观察者实例设置给Dep.target，用以依赖收集。同时将该实例存入target栈中 */
-export function pushTarget (_target: ?Watcher) {
+export function pushTarget(_target: ?Watcher) {
   if (Dep.target) targetStack.push(Dep.target)
   Dep.target = _target
 }
 
 /* 将观察者实例从target栈中取出并设置给Dep.target */
-export function popTarget () {
+export function popTarget() {
   Dep.target = targetStack.pop()
 }

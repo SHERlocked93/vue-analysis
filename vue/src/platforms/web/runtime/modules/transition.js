@@ -333,7 +333,6 @@ export default inBrowser ? {
   create: _enter,
   activate: _enter,
   remove (vnode: VNode, rm: Function) {
-    /* istanbul ignore else */
     if (vnode.data.show !== true) {
       leave(vnode, rm)
     } else {

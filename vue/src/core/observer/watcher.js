@@ -96,7 +96,7 @@ export default class Watcher {
     if (this.computed) {                        // 是否是 计算属性
       this.value = undefined
       this.dep = new Dep()                      // 计算属性创建过程中并未求值
-    } else {
+    } else {                                    // 不是计算属性会立刻求值
       this.value = this.get()
     }
   }
@@ -193,7 +193,7 @@ export default class Watcher {
         // In activated mode, we want to proactively perform the computation
         // but only notify our subscribers when the value has indeed changed.
         this.getAndInvoke(() => {
-          this.dep.notify()
+          this.dep.notify()           // 通知渲染watcher重新渲染
         })
       }
     } else if (this.sync) {

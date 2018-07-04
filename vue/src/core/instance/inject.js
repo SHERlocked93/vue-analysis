@@ -18,7 +18,6 @@ export function initInjections (vm: Component) {
   if (result) {
     toggleObserving(false)
     Object.keys(result).forEach(key => {
-      /* istanbul ignore else */
       if (process.env.NODE_ENV !== 'production') {
         defineReactive(vm, key, result[key], () => {
           warn(

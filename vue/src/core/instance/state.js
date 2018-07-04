@@ -77,7 +77,6 @@ function initProps(vm: Component, propsOptions: Object) {
   for (const key in propsOptions) {
     keys.push(key)
     const value = validateProp(key, propsOptions, propsData, vm)
-    /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
       const hyphenatedKey = hyphenate(key)
       if (isReservedAttribute(hyphenatedKey) ||
@@ -137,10 +136,7 @@ function initData(vm: Component) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
-        warn(
-          `Method "${key}" has already been defined as a data property.`,
-          vm
-        )
+        warn(`Method "${key}" has already been defined as a data property.`, vm)
       }
     }
     if (props && hasOwn(props, key)) {
@@ -190,8 +186,7 @@ function initComputed(vm: Component, computed: Object) {
     }
     
     if (!isSSR) {
-      // create internal watcher for the computed property.
-      watchers[key] = new Watcher(
+      watchers[key] = new Watcher(         // computed watcher 计算属性观察者
         vm,
         getter || noop,
         noop,
@@ -287,7 +282,7 @@ function initMethods(vm: Component, methods: Object) {
   }
 }
 
-/* 初始化watchers */
+/* 初始化watch */
 function initWatch(vm: Component, watch: Object) {
   for (const key in watch) {
     const handler = watch[key]
