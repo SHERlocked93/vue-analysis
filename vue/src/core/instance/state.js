@@ -170,7 +170,6 @@ const computedWatcherOptions = { computed: true }
 
 /* 初始化computed */
 function initComputed(vm: Component, computed: Object) {
-  // $flow-disable-line
   const watchers = vm._computedWatchers = Object.create(null)
   // computed properties are just getters during SSR
   const isSSR = isServerRendering()
