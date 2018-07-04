@@ -236,8 +236,7 @@ export function defineComputed(
                                    ? userDef.set
                                    : noop
   }
-  if (process.env.NODE_ENV !== 'production' &&
-    sharedPropertyDefinition.set === noop) {
+  if (process.env.NODE_ENV !== 'production' && sharedPropertyDefinition.set === noop) {
     sharedPropertyDefinition.set = function() {
       warn(
         `Computed property "${key}" was assigned to but it has no setter.`,

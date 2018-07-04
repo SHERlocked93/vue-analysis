@@ -95,7 +95,7 @@ export default class Watcher {
     }
     if (this.computed) {                        // 是否是 计算属性
       this.value = undefined
-      this.dep = new Dep()
+      this.dep = new Dep()                      // 计算属性创建过程中并未求值
     } else {
       this.value = this.get()
     }
@@ -111,11 +111,11 @@ export default class Watcher {
     const vm = this.vm
     
     // 执行了getter操作，看似执行了渲染操作，其实是执行了依赖收集。
-    //       在将Dep.target设置为自生观察者实例以后，执行getter操作。
-    //       譬如说现在的的data中可能有a、b、c三个数据，getter渲染需要依赖a跟c，
-    //       那么在执行getter的时候就会触发a跟c两个数据的getter函数，
-    //       在getter函数中即可判断Dep.target是否存在然后完成依赖收集，
-    //       将该观察者对象放入闭包中的Dep的subs中去。
+    // 在将Dep.target设置为自生观察者实例以后，执行getter操作。
+    // 譬如说现在的的data中可能有a、b、c三个数据，getter渲染需要依赖a跟c，
+    // 那么在执行getter的时候就会触发a跟c两个数据的getter函数，
+    // 在getter函数中即可判断Dep.target是否存在然后完成依赖收集，
+    // 将该观察者对象放入闭包中的Dep的subs中去。
     try {
       value = this.getter.call(vm, vm)
     } catch (e) {
@@ -125,15 +125,11 @@ export default class Watcher {
         throw e
       }
     } finally {
-      // "touch" every property so they are all tracked as
-      // dependencies for deep watching
-      // 如果存在deep，则触发每个深层对象的依赖，追踪其变化
-      if (this.deep) {
-        // 递归每一个对象或者数组，触发它们的getter，使得对象或数组的每一个成员都被依赖收集，形成一个“深（deep）”依赖关系
-        traverse(value)
+      // "touch" every property so they are all tracked as dependencies for deep watching
+      if (this.deep) {   // 如果存在deep，则触发每个深层对象的依赖，追踪其变化
+        traverse(value)  // 递归每一个对象或者数组，触发它们的getter，使得对象或数组的每一个成员都被依赖收集，形成深deep依赖关系
       }
-      // 将观察者实例从target栈中取出并设置给Dep.target
-      popTarget()
+      popTarget()        // 将观察者实例从target栈中取出并设置给Dep.target
       this.cleanupDeps()
     }
     return value
@@ -159,8 +155,7 @@ export default class Watcher {
    * Clean up for dependency collection.
    */
   cleanupDeps() {
-    // 移除所有观察者对象
-    let i = this.deps.length
+    let i = this.deps.length    // 移除所有观察者对象
     while (i--) {
       const dep = this.deps[i]
       if (!this.newDepIds.has(dep.id)) {
@@ -178,12 +173,11 @@ export default class Watcher {
   }
   
   /**
+   * 调度者接口，当依赖发生改变的时候进行回调。
    * Subscriber interface.
    * Will be called when a dependency changes.
-   * 调度者接口，当依赖发生改变的时候进行回调。
    */
   update() {
-    /* istanbul ignore else */
     if (this.computed) {
       // A computed property watcher has two modes: lazy and activated.
       // It initializes as lazy by default, and only becomes activated when
@@ -210,6 +204,7 @@ export default class Watcher {
   }
   
   /**
+   * 调度者工作接口，将被调度者回调
    * Scheduler job interface.
    * Will be called by the scheduler.
    */
@@ -259,7 +254,7 @@ export default class Watcher {
   }
   
   /**
-   * 收集该watcher的所有deps依赖
+   * 收集该watcher的所有deps依赖，只有计算属性使用
    * Depend on this watcher. Only for computed property watchers.
    */
   depend() {
