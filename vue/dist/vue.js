@@ -1003,12 +1003,11 @@ function defineReactive (
       return value
     },
     set: function reactiveSetter (newVal) {
+      debugger
       var value = getter ? getter.call(obj) : val;
-      /* eslint-disable no-self-compare */
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
-      /* eslint-enable no-self-compare */
       if ("development" !== 'production' && customSetter) {
         customSetter();
       }

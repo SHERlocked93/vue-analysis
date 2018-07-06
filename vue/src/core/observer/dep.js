@@ -29,7 +29,7 @@ export default class Dep {
     remove(this.subs, sub)
   }
   
-  /* 依赖收集，当存在Dep.target的时候添加观察者对象 */
+  /* 依赖收集，当存在Dep.target的时候把自己添加观察者的依赖中 */
   depend() {
     if (Dep.target) {
       Dep.target.addDep(this)

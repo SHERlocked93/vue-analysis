@@ -217,7 +217,7 @@ export default class Watcher {
   getAndInvoke(cb: Function) {
     const value = this.get()
     if (
-      value !== this.value ||
+      value !== this.value ||                         // 计算值如果和原值一样，则不执行渲染回调
       // Deep watchers and watchers on Object/Arrays should fire even
       // when the value is the same, because the value may
       // have mutated.
@@ -258,7 +258,7 @@ export default class Watcher {
    * Depend on this watcher. Only for computed property watchers.
    */
   depend() {
-    if (this.dep && Dep.target) {
+    if (this.dep && Dep.target) {       // 计算属性被访问时，target为render func
       this.dep.depend()
     }
   }

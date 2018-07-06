@@ -1,6 +1,6 @@
 <template>
-  {{ name }}
-  <button @click='change'>change</button>
+  {{ name }} - {{ age }}
+  <button @click='change'>change useless</button>
   <button @click='changeLast'>change last name</button>
 </template>
 
@@ -11,14 +11,14 @@
         text: {
           firstName: ' Qian ',
           lastName: ' Yu ',
+          age: 25,
           useless: 1
         }
       }
     },
     methods: {
       change() {
-        this.useless = 2
-        console.log(this.useless)
+        this.useless++
       },
       
       changeLast() {

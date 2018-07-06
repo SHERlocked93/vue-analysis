@@ -6,7 +6,7 @@
 </head>
 <body>
   <div id="app">
-    {{ name }}
+    {{ name }} - {{ age }}
     <button @click='change'>change</button>
     <button @click='changeLast'>change last name</button>
   </div>
@@ -18,6 +18,7 @@
         return {
           firstName: ' Qian ',
           lastName: ' Yu ',
+          age: 25,
           useless: 1
         }
       },
