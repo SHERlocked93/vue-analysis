@@ -107,18 +107,16 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
 }
 
 /**
- * 尝试创建一个Observer实例（__ob__），如果成功创建Observer实例则返回新的Observer实例
+ * 尝试创建一个Observer实例 __ob__，如果成功创建Observer实例则返回新的Observer实例
  * ，如果已有Observer实例则返回现有的Observer实例。
- * Attempt to create an observer instance for a value,
- * returns the new observer if successfully observed,
- * or the existing observer if the value already has one.
  */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
     return
   }
   let ob: Observer | void
-  // 这里用__ob__这个属性来判断是否已经有Observer实例，如果没有Observer实例则会新建一个Observer实例并赋值给__ob__这个属性，如果已有Observer实例则直接返回该Observer实例
+  // 这里用__ob__这个属性来判断是否已经有Observer实例，如果没有Observer实例则会
+  // 新建一个Observer实例并赋值给__ob__这个属性，如果已有Observer实例则直接返回该Observer实例
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
@@ -169,8 +167,8 @@ export function defineReactive (
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val         // 如果原本对象拥有getter方法则执行
-      if (Dep.target) {                                     // 依赖收集的过程
-        dep.depend()                                        // 进行依赖收集
+      if (Dep.target) {                                     // 如果当前有watcher在读取响应式对象
+        dep.depend()                                        // 那么进行依赖收集，dep.addSub
         if (childOb) {           // 子对象进行依赖收集，其实就是将同一个watcher观察者实例放进了两个depend中
                                  // ，一个是正在本身闭包中的depend，另一个是子元素的depend
           childOb.dep.depend()
@@ -194,8 +192,8 @@ export function defineReactive (
       } else {
         val = newVal
       }
-      childOb = !shallow && observe(newVal)
-      dep.notify()
+      childOb = !shallow && observe(newVal)      // 每set一次都要判断是否需要响应式化
+      dep.notify()                               // 如果发生变更，则通知更新，调用watcher.update()
     }
   })
 }

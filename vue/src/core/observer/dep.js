@@ -15,8 +15,8 @@ export default class Dep {
   subs: Array<Watcher>           // 观察者集合
   
   constructor() {
-    this.id = uid++
-    this.subs = []
+    this.id = uid++              // Dep实例的id，为了方便去重
+    this.subs = []               // 存储收集器中需要通知的Watcher
   }
   
   /* 添加一个观察者对象 */
@@ -49,9 +49,9 @@ export default class Dep {
 // the current target watcher being evaluated.
 // this is globally unique because there could be only one
 // watcher being evaluated at any time.
-/* 当前，依赖收集完需要将Dep.target设为null，防止后面重复添加依赖。 */
+/* 当前，依赖收集完需要将Dep.target设为null，防止后面重复添加依赖，造成代码死循环 */
 Dep.target = null
-const targetStack = []
+const targetStack = []                             // watcher栈
 
 /* 将watcher观察者实例设置给Dep.target，用以依赖收集。同时将该实例存入target栈中 */
 export function pushTarget(_target: ?Watcher) {

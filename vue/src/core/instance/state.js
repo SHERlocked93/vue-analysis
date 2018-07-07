@@ -149,8 +149,7 @@ function initData(vm: Component) {
       proxy(vm, `_data`, key)
     }
   }
-  // 给data做响应式处理
-  observe(data, true /* asRootData */)
+  observe(data, true /* asRootData */)       // 给data做响应式处理
 }
 
 export function getData(data: Function, vm: Component): any {
@@ -246,7 +245,7 @@ function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
-      watcher.depend()
+      watcher.depend()            // 收集当前读取
       return watcher.evaluate()
     }
   }

@@ -52,11 +52,10 @@ export default class Watcher {
     isRenderWatcher?: boolean           // 是否是渲染watcher的标志位
   ) {
     this.vm = vm
-    /* _watchers存放订阅者实例 */
     if (isRenderWatcher) {
       vm._watcher = this
     }
-    vm._watchers.push(this)
+    vm._watchers.push(this)                   // _watchers存放所有watcher实例
     // options
     if (options) {
       this.deep = !!options.deep
@@ -129,7 +128,7 @@ export default class Watcher {
       if (this.deep) {   // 如果存在deep，则触发每个深层对象的依赖，追踪其变化
         traverse(value)  // 递归每一个对象或者数组，触发它们的getter，使得对象或数组的每一个成员都被依赖收集，形成深deep依赖关系
       }
-      popTarget()        // 将观察者实例从target栈中取出并设置给Dep.target
+      popTarget()           // 将观察者实例从target栈中取出并设置给Dep.target
       this.cleanupDeps()
     }
     return value
@@ -193,13 +192,13 @@ export default class Watcher {
         // In activated mode, we want to proactively perform the computation
         // but only notify our subscribers when the value has indeed changed.
         this.getAndInvoke(() => {
-          this.dep.notify()           // 通知渲染watcher重新渲染
+          this.dep.notify()           // 通知渲染watcher重新渲染，通知依赖自己的所有watcher执行update
         })
       }
     } else if (this.sync) {
       this.run()
     } else {
-      queueWatcher(this)
+      queueWatcher(this)              // 异步推送到调度者观察者队列中，下一个tick时调用
     }
   }
   
@@ -224,8 +223,7 @@ export default class Watcher {
       isObject(value) ||
       this.deep
     ) {
-      // set new value
-      const oldValue = this.value
+      const oldValue = this.value         // set new value
       this.value = value
       this.dirty = false
       if (this.user) {
@@ -258,7 +256,7 @@ export default class Watcher {
    * Depend on this watcher. Only for computed property watchers.
    */
   depend() {
-    if (this.dep && Dep.target) {       // 计算属性被访问时，target为render func
+    if (this.dep && Dep.target) {       // 计算属性在视图被访问时，target为render func
       this.dep.depend()
     }
   }

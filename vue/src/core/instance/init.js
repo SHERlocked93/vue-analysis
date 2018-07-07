@@ -58,7 +58,6 @@ export function initMixin(Vue: Class<Component>) {
     initProvide(vm)                 // 初始化Provide after data/props
     callHook(vm, 'created')
     
-    /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       vm._name = formatComponentName(vm, false)
       mark(endTag)
