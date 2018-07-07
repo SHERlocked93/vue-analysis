@@ -58,9 +58,9 @@ export default class Watcher {
     vm._watchers.push(this)                   // _watchers存放所有watcher实例
     // options
     if (options) {
-      this.deep = !!options.deep
+      this.deep = !!options.deep              // 侦听器配置
       this.user = !!options.user
-      this.computed = !!options.computed
+      this.computed = !!options.computed      // 计算属性配置
       this.sync = !!options.sync
       this.before = options.before
     } else {
@@ -69,9 +69,9 @@ export default class Watcher {
     this.cb = cb
     this.id = ++uid // uid for batching
     this.active = true
-    this.dirty = this.computed // for computed watchers
-    this.deps = []
-    this.newDeps = []
+    this.dirty = this.computed // for computed watchers 用来判断是否需要重新求值
+    this.deps = []             // 上一次添加的Dep实例
+    this.newDeps = []          // 新添加的Dep实例
     this.depIds = new Set()
     this.newDepIds = new Set()
     this.expression = process.env.NODE_ENV !== 'production'
@@ -79,9 +79,9 @@ export default class Watcher {
                       : ''
     // parse expression for getter，把表达式expOrFn解析成getter
     if (typeof expOrFn === 'function') {
-      this.getter = expOrFn
+      this.getter = expOrFn             // 在get方法中执行
     } else {
-      this.getter = parsePath(expOrFn)
+      this.getter = parsePath(expOrFn)  // 侦听器为字符串 a.b.c
       if (!this.getter) {
         this.getter = function() {}
         process.env.NODE_ENV !== 'production' && warn(
@@ -105,18 +105,12 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get() {
-    pushTarget(this)
+    pushTarget(this)                // 推入当前要订阅变化的watcher
     let value
     const vm = this.vm
     
-    // 执行了getter操作，看似执行了渲染操作，其实是执行了依赖收集。
-    // 在将Dep.target设置为自生观察者实例以后，执行getter操作。
-    // 譬如说现在的的data中可能有a、b、c三个数据，getter渲染需要依赖a跟c，
-    // 那么在执行getter的时候就会触发a跟c两个数据的getter函数，
-    // 在getter函数中即可判断Dep.target是否存在然后完成依赖收集，
-    // 将该观察者对象放入闭包中的Dep的subs中去。
     try {
-      value = this.getter.call(vm, vm)
+      value = this.getter.call(vm, vm)        // 第二个参数给parsePath返回函数
     } catch (e) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`)
@@ -125,8 +119,8 @@ export default class Watcher {
       }
     } finally {
       // "touch" every property so they are all tracked as dependencies for deep watching
-      if (this.deep) {   // 如果存在deep，则触发每个深层对象的依赖，追踪其变化
-        traverse(value)  // 递归每一个对象或者数组，触发它们的getter，使得对象或数组的每一个成员都被依赖收集，形成深deep依赖关系
+      if (this.deep) {      // 如果存在deep，则触发每个深层对象的依赖，追踪其变化
+        traverse(value)     // 递归每一个对象或者数组，触发它们的getter，使得对象或数组的每一个成员都被依赖收集，形成深deep依赖关系
       }
       popTarget()           // 将观察者实例从target栈中取出并设置给Dep.target
       this.cleanupDeps()
@@ -150,11 +144,11 @@ export default class Watcher {
   }
   
   /**
-   * 清理依赖收集
+   * 清理newDeps里没有的无用watcher依赖
    * Clean up for dependency collection.
    */
   cleanupDeps() {
-    let i = this.deps.length    // 移除所有观察者对象
+    let i = this.deps.length    // 移除无用观察者对象
     while (i--) {
       const dep = this.deps[i]
       if (!this.newDepIds.has(dep.id)) {
@@ -182,7 +176,7 @@ export default class Watcher {
       // It initializes as lazy by default, and only becomes activated when
       // it is depended on by at least one subscriber, which is typically
       // another computed property or a component's render function.
-      if (this.dep.subs.length === 0) {
+      if (this.dep.subs.length === 0) {       // 如果没人订阅这个计算属性的变化
         // In lazy mode, we don't want to perform computations until necessary,
         // so we simply mark the watcher as dirty. The actual computation is
         // performed just-in-time in this.evaluate() when the computed property

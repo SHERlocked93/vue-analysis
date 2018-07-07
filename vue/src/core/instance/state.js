@@ -47,17 +47,17 @@ export function proxy(target: Object, sourceKey: string, key: string) {
 }
 
 export function initState(vm: Component) {
-  vm._watchers = []
+  vm._watchers = []                                   // 保存这个vm上的所有watcher
   const opts = vm.$options
-  if (opts.props) initProps(vm, opts.props)
-  if (opts.methods) initMethods(vm, opts.methods)
-  if (opts.data) {
+  if (opts.props) initProps(vm, opts.props)           // 初始化props
+  if (opts.methods) initMethods(vm, opts.methods)     // 初始化methods
+  if (opts.data) {                                    // 初始化data
     initData(vm)
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
-  if (opts.computed) initComputed(vm, opts.computed)
-  if (opts.watch && opts.watch !== nativeWatch) {
+  if (opts.computed) initComputed(vm, opts.computed)  // 初始化computed
+  if (opts.watch && opts.watch !== nativeWatch) {     // 初始化watch
     initWatch(vm, opts.watch)
   }
 }
@@ -331,21 +331,20 @@ export function stateMixin(Vue: Class<Component>) {
       warn(`$props is readonly.`, this)
     }
   }
-  // 这里$data只提供了get方法，set方法再非生产环境时会给予警告
+  // 这里$data只提供了get方法，set方法在非生产环境时会给予警告
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   
-  // 这里$props只提供了get方法，set方法再非生产环境时会给予警告
+  // 这里$props只提供了get方法，set方法在非生产环境时会给予警告
   Object.defineProperty(Vue.prototype, '$props', propsDef)
   
   /*
-    https://cn.vuejs.org/v2/api/#vm-set
     用以将data之外的对象绑定成响应式的
+    https://cn.vuejs.org/v2/api/#vm-set
   */
   Vue.prototype.$set = set
   
-  /*
-    https://cn.vuejs.org/v2/api/#vm-delete
-    与set对立，解除绑定
+  /* 与set对立，解除绑定
+     https://cn.vuejs.org/v2/api/#vm-delete
   */
   Vue.prototype.$delete = del
   

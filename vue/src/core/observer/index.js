@@ -154,7 +154,7 @@ export function defineReactive (
     return
   }
 
-  // 如果之前该对象已经预设了getter以及setter函数则将其取出来，新定义的getter/setter中会将其执行，保证不会覆盖之前已经定义的getter/setter
+  // 如果之前该对象已经预设了getter/setter则将其缓存，新定义的getter/setter中会将其执行，保证不会覆盖之前已经定义的getter/setter
   const getter = property && property.get
   const setter = property && property.set
   if ((!getter || setter) && arguments.length === 2) {
@@ -180,8 +180,8 @@ export function defineReactive (
       return value
     },
     set: function reactiveSetter (newVal) {
-      const value = getter ? getter.call(obj) : val
-      if (newVal === value || (newVal !== newVal && value !== value)) {
+      const value = getter ? getter.call(obj) : val         	            // 先getter
+      if (newVal === value || (newVal !== newVal && value !== value)) {   // 如果跟原来值一样则不管
         return
       }
       if (process.env.NODE_ENV !== 'production' && customSetter) {
