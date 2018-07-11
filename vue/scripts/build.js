@@ -49,6 +49,7 @@ function buildEntry (config) {
     .then(bundle => bundle.generate(output))
     .then(({ code }) => {
       if (isProd) {
+        // noinspection ES6ConvertVarToLetConst
         var minified = (banner ? banner + '\n' : '') + uglify.minify(code, {
           output: {
             ascii_only: true

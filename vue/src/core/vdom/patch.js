@@ -625,6 +625,7 @@ export function createPatchFunction(backend) {
   }
   
   let hydrationBailed = false
+  
   // list of modules that can skip create hook during hydration because they
   // are already rendered on the client or has no need for initialization
   // Note: style is excluded because it relies on initial clone for future

@@ -13,6 +13,7 @@ import {
   toggleObserving
 } from '../observer/index'
 
+// noinspection ES6CheckImport
 import {
   warn,
   bind,
@@ -79,8 +80,7 @@ function initProps(vm: Component, propsOptions: Object) {
     const value = validateProp(key, propsOptions, propsData, vm)
     if (process.env.NODE_ENV !== 'production') {
       const hyphenatedKey = hyphenate(key)
-      if (isReservedAttribute(hyphenatedKey) ||
-        config.isReservedAttr(hyphenatedKey)) {
+      if (isReservedAttribute(hyphenatedKey) || config.isReservedAttr(hyphenatedKey)) {
         warn(
           `"${hyphenatedKey}" is a reserved attribute and cannot be used as component prop.`,
           vm
@@ -331,10 +331,9 @@ export function stateMixin(Vue: Class<Component>) {
       warn(`$props is readonly.`, this)
     }
   }
-  // 这里$data只提供了get方法，set方法在非生产环境时会给予警告
-  Object.defineProperty(Vue.prototype, '$data', dataDef)
   
-  // 这里$props只提供了get方法，set方法在非生产环境时会给予警告
+  // 这里$data，$props只提供了get方法，set方法在非生产环境时会给予警告
+  Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
   
   /*

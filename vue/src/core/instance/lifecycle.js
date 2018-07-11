@@ -147,9 +147,7 @@ export function mountComponent(
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
-      /* istanbul ignore if */
-      if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
-        vm.$options.el || el) {
+      if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') || vm.$options.el || el) {
         warn(
           'You are using the runtime-only build of Vue where the template ' +
           'compiler is not available. Either pre-compile the templates into ' +
@@ -157,10 +155,7 @@ export function mountComponent(
           vm
         )
       } else {
-        warn(
-          'Failed to mount component: template or render function not defined.',
-          vm
-        )
+        warn('Failed to mount component: template or render function not defined.', vm)
       }
     }
   }
@@ -168,7 +163,6 @@ export function mountComponent(
   
   // 渲染watcher，当数据更改，updateComponent作为Watcher对象的getter函数，用来依赖收集，并渲染视图
   let updateComponent
-  /* istanbul ignore if */
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
       const name = vm._name
@@ -205,9 +199,9 @@ export function mountComponent(
   }, true /* isRenderWatcher */)
   hydrating = false
   
+  // 这里注意 vm.$vnode 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
-  // 这里注意 vm.$vnode 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例
   if (vm.$vnode == null) {
     vm._isMounted = true        // 表示这个实例已经挂载
     callHook(vm, 'mounted')

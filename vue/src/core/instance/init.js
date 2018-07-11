@@ -15,11 +15,9 @@ let uid = 0
 export function initMixin(Vue: Class<Component>) {
   Vue.prototype._init = function(options?: Object) {
     const vm: Component = this
-    // a uid
     vm._uid = uid++
     
     let startTag, endTag
-    /* istanbul ignore if */
     // 浏览器环境&支持window.performance&非生产环境&配置了performance
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       startTag = `vue-perf-start:${vm._uid}`
@@ -52,11 +50,11 @@ export function initMixin(Vue: Class<Component>) {
     initLifecycle(vm)               // 初始化生命周期  src/core/instance/lifecycle.js
     initEvents(vm)                  // 初始化事件  src/core/instance/events.js
     initRender(vm)                  // 初始化render  src/core/instance/render.js
-    callHook(vm, 'beforeCreate')
+    callHook(vm, 'beforeCreate')    // 触发钩子beforeCreate
     initInjections(vm)              // 初始化注入值 before data/props src/core/instance/inject.js
     initState(vm)                   // 挂载 data、props、methods、watcher、computed
     initProvide(vm)                 // 初始化Provide after data/props
-    callHook(vm, 'created')
+    callHook(vm, 'created')         // 触发钩子created
     
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
       vm._name = formatComponentName(vm, false)
@@ -65,7 +63,7 @@ export function initMixin(Vue: Class<Component>) {
     }
     
     if (vm.$options.el) {
-      vm.$mount(vm.$options.el)
+      vm.$mount(vm.$options.el)       // 挂载
     }
   }
 }
@@ -91,13 +89,11 @@ export function initInternalComponent(vm: Component, options: InternalComponentO
 
 export function resolveConstructorOptions(Ctor: Class<Component>) {
   let options = Ctor.options
-  if (Ctor.super) {
-    const superOptions = resolveConstructorOptions(Ctor.super)
-    const cachedSuperOptions = Ctor.superOptions
-    if (superOptions !== cachedSuperOptions) {
-      // super option changed,
-      // need to resolve new options.
-      Ctor.superOptions = superOptions
+  if (Ctor.super) {                                               // 如果存在父类的时候
+    const superOptions = resolveConstructorOptions(Ctor.super)    // 对其父类进行，获取父类的options
+    const cachedSuperOptions = Ctor.superOptions         // 之前已经缓存起来的父类的options，用以检测是否更新
+    if (superOptions !== cachedSuperOptions) {  // 对比当前父类的option以及缓存中的option，两个不一样则代表已经被更新
+      Ctor.superOptions = superOptions        // 如果改变，把新的option缓存起来
       // check if there are any late-modified/attached options (#4976)
       const modifiedOptions = resolveModifiedOptions(Ctor)
       // update base extend options

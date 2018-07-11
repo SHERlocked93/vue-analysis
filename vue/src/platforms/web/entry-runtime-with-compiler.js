@@ -23,9 +23,8 @@ Vue.prototype.$mount = function(
   
   /* el不可以是body或document */
   if (el === document.body || el === document.documentElement) {
-    process.env.NODE_ENV !== 'production' && warn(
-      `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
-    )
+    process.env.NODE_ENV !== 'production' &&
+    warn(`Do not mount Vue to <html> or <body> - mount to normal elements instead.`)
     return this
   }
   
@@ -37,7 +36,6 @@ Vue.prototype.$mount = function(
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {
           template = idToTemplate(template)
-          /* istanbul ignore if */
           if (process.env.NODE_ENV !== 'production' && !template) {
             warn(`Template element not found or is empty: ${options.template}`, this)
           }
@@ -56,7 +54,6 @@ Vue.prototype.$mount = function(
     
     // 把获取到的template通过编译的手段转化为render函数
     if (template) {
-      /* istanbul ignore if */
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
@@ -70,7 +67,6 @@ Vue.prototype.$mount = function(
       options.render = render
       options.staticRenderFns = staticRenderFns
       
-      /* istanbul ignore if */
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile end')
         measure(`vue ${this._name} compile`, 'compile', 'compile end')

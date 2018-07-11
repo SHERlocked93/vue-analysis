@@ -3,6 +3,7 @@
 import Dep from './dep'
 import VNode from '../vdom/vnode'
 import { arrayMethods } from './array'
+// noinspection ES6CheckImport
 import {
   def,
   warn,

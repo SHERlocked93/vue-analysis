@@ -37,6 +37,7 @@ export type CodegenResult = {
   staticRenderFns: Array<string>
 };
 
+/* 将AST语法树转化成render以及staticRenderFns的字符串 */
 export function generate (
   ast: ASTElement | void,
   options: CompilerOptions
@@ -49,23 +50,24 @@ export function generate (
   }
 }
 
+/* 处理element，分别处理static静态节点、v-once、v-for、v-if、template、slot以及组件或元素 */
 export function genElement (el: ASTElement, state: CodegenState): string {
   if (el.staticRoot && !el.staticProcessed) {
-    return genStatic(el, state)
+    return genStatic(el, state)           // 处理static静态节点
   } else if (el.once && !el.onceProcessed) {
-    return genOnce(el, state)
+    return genOnce(el, state)             // 处理v-once
   } else if (el.for && !el.forProcessed) {
-    return genFor(el, state)
+    return genFor(el, state)              // 处理v-for
   } else if (el.if && !el.ifProcessed) {
-    return genIf(el, state)
+    return genIf(el, state)               // 处理v-if
   } else if (el.tag === 'template' && !el.slotTarget) {
-    return genChildren(el, state) || 'void 0'
+    return genChildren(el, state) || 'void 0'     // 处理template
   } else if (el.tag === 'slot') {
-    return genSlot(el, state)
+    return genSlot(el, state)             // 处理slot
   } else {
     // component or element
     let code
-    if (el.component) {
+    if (el.component) {               // 处理组件或元素
       code = genComponent(el.component, el, state)
     } else {
       const data = el.plain ? undefined : genData(el, state)
