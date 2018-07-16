@@ -15,7 +15,7 @@ export const MAX_UPDATE_COUNT = 100
 const queue: Array<Watcher> = []
 const activatedChildren: Array<Component> = []
 let has: { [key: number]: ?true } = {}
-let circular: { [key: number]: number } = {}
+let circular: { [key: number]: number } = {}          // 循环更新
 let waiting = false
 let flushing = false
 let index = 0
@@ -67,9 +67,8 @@ function flushSchedulerQueue () {
     id = watcher.id
     has[id] = null                // 将has的标记删除
     watcher.run()                 // 执行watcher
-    // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {      // 在dev环境下检查是否进入死循环
-      circular[id] = (circular[id] || 0) + 1
+      circular[id] = (circular[id] || 0) + 1              // 比如user watcher订阅自己的情况
       if (circular[id] > MAX_UPDATE_COUNT) {              // 持续执行了一百次watch代表可能存在死循环
         warn(
           'You may have an infinite update loop ' + (
@@ -85,7 +84,7 @@ function flushSchedulerQueue () {
   }
 
   // keep copies of post queues before resetting state
-  const activatedQueue = activatedChildren.slice()
+  const activatedQueue = activatedChildren.slice()      // 给keep-alive用的
   const updatedQueue = queue.slice()
 
   resetSchedulerState()
@@ -100,7 +99,7 @@ function flushSchedulerQueue () {
   }
 }
 
-/* 调用updated钩子 */
+/* 当是render watcher时调用updated钩子 */
 function callUpdatedHooks (queue) {
   let i = queue.length
   while (i--) {

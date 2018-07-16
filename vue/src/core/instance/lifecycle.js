@@ -65,7 +65,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // based on the rendering backend used.
     if (!prevVnode) {
       // initial render
-      vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
+      vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)    // __patch__位于/web/runtime/index.js
     } else {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode)
@@ -171,7 +171,7 @@ export function mountComponent(
       const endTag = `vue-perf-end:${id}`
       
       mark(startTag)
-      const vnode = vm._render()                    // _render方法位于 /instance/render.js
+      const vnode = vm._render()                     // _render方法位于 /instance/render.js
       mark(endTag)
       measure(`vue ${name} render`, startTag, endTag)
       
@@ -182,11 +182,12 @@ export function mountComponent(
     }
   } else {
     updateComponent = () => {
-      vm._update(vm._render(), hydrating)
+      vm._update(vm._render(), hydrating)           // _update方法位于上面
     }
   }
   
-  // 渲染watcher,Watcher 在这里起到两个作用，一个是初始化的时候会执行回调函数，另一个是当 vm 实例中的监测的数据发生变化的时候执行回调函数
+  // 渲染watcher,Watcher 在这里起到两个作用，一个是初始化的时候会执行render函数
+  // ，另一个是当 vm 实例中的监测的数据发生变化的时候执行回调函数
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined

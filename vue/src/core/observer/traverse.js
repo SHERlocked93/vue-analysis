@@ -11,6 +11,7 @@ const seenObjects = new Set()                   //  用来存放Oberser实例等
  * getters, so that every nested property inside the object
  * is collected as a "deep" dependency.
  */
+/* 递归每一个对象或者数组，触发它们的getter，使得对象或数组的每一个成员都被依赖收集，形成一个“深（deep）”依赖关系 */
 export function traverse (val: any) {
   _traverse(val, seenObjects)
   seenObjects.clear()

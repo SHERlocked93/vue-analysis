@@ -8,12 +8,15 @@ export const n: null = null
 export const undef: void = undefined
 export const str1: ?string = 'null'
 
+export const v: void | string = undefined
+export const a: any = null
+
 // region 类型推断
 function split(str) {
   return str.split(' ')
 }
 
-split('11')
+split('13')
 
 function add(x, y) {
   return x + y
@@ -27,7 +30,7 @@ function add1(x: string, y: number): string {
   return x + y
 }
 
-add1('hello', 3)
+add1('hello', 123)
 // endregion
 
 // region 数组、对象、类

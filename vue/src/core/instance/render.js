@@ -84,7 +84,7 @@ export function renderMixin(Vue: Class<Component>) {
     let vnode
     try {
       /* 调用render函数，返回一个VNode节点 */
-      vnode = render.call(vm._renderProxy, vm.$createElement)
+      vnode = render.call(vm._renderProxy, vm.$createElement)     // _renderProxy位于 /instance/proxy.js
     } catch (e) {
       handleError(e, vm, `render`)
       // return error render result,

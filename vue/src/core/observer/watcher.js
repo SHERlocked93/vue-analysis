@@ -220,7 +220,7 @@ export default class Watcher {
       const oldValue = this.value         // set new value
       this.value = value
       this.dirty = false
-      if (this.user) {
+      if (this.user) {                    // user watcher
         try {
           cb.call(this.vm, value, oldValue)
         } catch (e) {
