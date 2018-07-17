@@ -165,11 +165,7 @@ export default class Watcher {
     this.newDeps.length = 0
   }
   
-  /**
-   * 调度者接口，当依赖发生改变的时候进行回调。
-   * Subscriber interface.
-   * Will be called when a dependency changes.
-   */
+  /* Subscriber接口，当依赖发生改变的时候进行回调 */
   update() {
     if (this.computed) {
       // 一个computed watcher有两种模式：activated lazy(默认)。

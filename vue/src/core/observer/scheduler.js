@@ -59,7 +59,7 @@ function flushSchedulerQueue () {
   /* 不要将length进行缓存，因为在执行处理现有watcher对象期间，更多的watcher对象可能会被push进queue */
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
-    if (watcher.before) {
+    if (watcher.before) {         // 如果watcher有before则执行
       watcher.before()
     }
     id = watcher.id
@@ -85,7 +85,7 @@ function flushSchedulerQueue () {
   const activatedQueue = activatedChildren.slice()      // 给keep-alive用的
   const updatedQueue = queue.slice()
 
-  resetSchedulerState()
+  resetSchedulerState()                       // 重置调度者状态
 
   // call component updated and activated hooks
   callActivatedHooks(activatedQueue)          // 使子组件状态都置成active同时调用activated钩子
@@ -148,11 +148,11 @@ export function queueWatcher (watcher: Watcher) {
       while (i > index && queue[i].id > watcher.id) {
         i--
       }
-      queue.splice(i + 1, 0, watcher)
+      queue.splice(i + 1, 0, watcher)   // 插入到第一个待插入watcher的id比当前队列中watcher的id大的位置
     }
     
     // queue the flush
-    if (!waiting) {
+    if (!waiting) {           // 标记是否已传给nextTick
       waiting = true
       nextTick(flushSchedulerQueue)
     }

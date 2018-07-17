@@ -8,6 +8,7 @@ import { isIOS, isNative } from './env'
 const callbacks = []          // 存放异步执行的回调
 let pending = false           // 一个标记位，如果已经有timerFunc被推送到任务队列中去则不需要重复推送
 
+/* 执行异步回调 */
 function flushCallbacks() {
   pending = false
   const copies = callbacks.slice(0)
@@ -17,11 +18,11 @@ function flushCallbacks() {
   }
 }
 
-// 这里我们使用微任务和（宏）任务来异步延迟包装器。
-// 在2.4之前的版本中，我们在很多地方都使用了microtask，但是在某些情况下microtask具有太高的优先级
-// ，并且可能在顺序事件（例如＃4521，＃6690）之间或者甚至在同一事件的事件冒泡过程中（＃6566）之间触发。
+// 这里我们使用微任务和宏任务来异步延迟包装器。
+// 在2.4之前的版本中，nextTick基本上基于microtask来实现的，但是在某些情况下microtask具有太高的优先级
+// ，并且可能在连续顺序事件（例如＃4521，＃6690）之间或者甚至在同一事件的事件冒泡过程中（＃6566）之间触发。
 // 但是如果全部都改成macrotask，对一些有重绘和动画的场景也会有性能影响，如 issue #6813。
-// 这里我们默认使用microtask，但在需要时（例如在v-on附加的事件处理程序中）提供强制macrotask的方法。
+// 这里提供的解决办法是默认使用microtask，但在需要时（例如在v-on附加的事件处理程序中）强制使用macrotask
 // Here we have async deferring wrappers using both microtasks and (macro) tasks.
 // In < 2.4 we used microtasks everywhere, but there are some scenarios where
 // microtasks have too high a priority and fire in between supposedly
@@ -30,9 +31,9 @@ function flushCallbacks() {
 // when state is changed right before repaint (e.g. #6813, out-in transitions).
 // Here we use microtask by default, but expose a way to force (macro) task when
 // needed (e.g. in event handlers attached by v-on).
-let microTimerFunc  // 微任务
-let macroTimerFunc  // 宏任务
-let useMacroTask = false
+let microTimerFunc        // 微任务执行方法
+let macroTimerFunc        // 宏任务执行方法
+let useMacroTask = false  // 是否强制为宏任务
 
 // 宏任务 Determine (macro) task defer implementation.
 // 技术上setImmediate是理想的选择，但它只在IE中可用
@@ -73,7 +74,6 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
     if (isIOS) setTimeout(noop)
   }
 } else {
-
   microTimerFunc = macroTimerFunc      // fallback to macro
 }
 
