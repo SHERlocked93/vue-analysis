@@ -172,19 +172,14 @@ export default class Watcher {
    */
   update() {
     if (this.computed) {
-      // A computed property watcher has two modes: lazy and activated.
-      // It initializes as lazy by default, and only becomes activated when
-      // it is depended on by at least one subscriber, which is typically
-      // another computed property or a component's render function.
+      // 一个computed watcher有两种模式：activated lazy(默认)。
+      // 只有当它被至少一个订阅者依赖时才置activated，这通常是另一个计算属性或组件的render function。
       if (this.dep.subs.length === 0) {       // 如果没人订阅这个计算属性的变化
-        // In lazy mode, we don't want to perform computations until necessary,
-        // so we simply mark the watcher as dirty. The actual computation is
-        // performed just-in-time in this.evaluate() when the computed property
-        // is accessed.
+        // lazy时，我们希望它只在必要时执行计算，所以我们只是简单地将观察者标记为dirty
+        // 当计算属性被访问时，实际的计算在this.evaluate()中执行
         this.dirty = true
       } else {
-        // In activated mode, we want to proactively perform the computation
-        // but only notify our subscribers when the value has indeed changed.
+        // activated模式下，我们希望主动执行计算，但只有当值确实发生变化时才通知我们的订阅者
         this.getAndInvoke(() => {
           this.dep.notify()           // 通知渲染watcher重新渲染，通知依赖自己的所有watcher执行update
         })

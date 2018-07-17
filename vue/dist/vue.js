@@ -1003,7 +1003,7 @@ function defineReactive (
       return value
     },
     set: function reactiveSetter (newVal) {
-      debugger
+      // debugger
       var value = getter ? getter.call(obj) : val;
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
@@ -3336,7 +3336,7 @@ function initState (vm) {
   } else {
     observe(vm._data = {}, true /* asRootData */);
   }
-  debugger
+  // debugger
   if (opts.computed) { initComputed(vm, opts.computed); }
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch);

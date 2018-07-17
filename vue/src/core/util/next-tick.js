@@ -5,10 +5,10 @@ import { noop } from 'shared/util'
 import { handleError } from './error'
 import { isIOS, isNative } from './env'
 
-const callbacks = []
-let pending = false
+const callbacks = []          // 存放异步执行的回调
+let pending = false           // 一个标记位，如果已经有timerFunc被推送到任务队列中去则不需要重复推送
 
-function flushCallbacks () {
+function flushCallbacks() {
   pending = false
   const copies = callbacks.slice(0)
   callbacks.length = 0
@@ -17,6 +17,11 @@ function flushCallbacks () {
   }
 }
 
+// 这里我们使用微任务和（宏）任务来异步延迟包装器。
+// 在2.4之前的版本中，我们在很多地方都使用了microtask，但是在某些情况下microtask具有太高的优先级
+// ，并且可能在顺序事件（例如＃4521，＃6690）之间或者甚至在同一事件的事件冒泡过程中（＃6566）之间触发。
+// 但是如果全部都改成macrotask，对一些有重绘和动画的场景也会有性能影响，如 issue #6813。
+// 这里我们默认使用microtask，但在需要时（例如在v-on附加的事件处理程序中）提供强制macrotask的方法。
 // Here we have async deferring wrappers using both microtasks and (macro) tasks.
 // In < 2.4 we used microtasks everywhere, but there are some scenarios where
 // microtasks have too high a priority and fire in between supposedly
@@ -29,7 +34,9 @@ let microTimerFunc  // 微任务
 let macroTimerFunc  // 宏任务
 let useMacroTask = false
 
-// Determine (macro) task defer implementation.
+// 宏任务 Determine (macro) task defer implementation.
+// 技术上setImmediate是理想的选择，但它只在IE中可用
+// 在同一个loop中所有DOM事件触发之后始终对回调queue唯一的polyfill是MessageChannel
 // Technically setImmediate should be the ideal choice, but it's only available
 // in IE. The only polyfill that consistently queues the callback after all DOM
 // events triggered in the same loop is by using MessageChannel.
@@ -39,8 +46,7 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
   }
 } else if (typeof MessageChannel !== 'undefined' && (
   isNative(MessageChannel) ||
-  // PhantomJS
-  MessageChannel.toString() === '[object MessageChannelConstructor]'
+  MessageChannel.toString() === '[object MessageChannelConstructor]'  // PhantomJS
 )) {
   const channel = new MessageChannel()
   const port = channel.port2
@@ -54,7 +60,7 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
   }
 }
 
-// Determine microtask defer implementation.
+// 微任务 Determine microtask defer implementation.
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
   const p = Promise.resolve()
   microTimerFunc = () => {
@@ -67,16 +73,16 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
     if (isIOS) setTimeout(noop)
   }
 } else {
-  // fallback to macro
-  microTimerFunc = macroTimerFunc
+
+  microTimerFunc = macroTimerFunc      // fallback to macro
 }
 
 /**
  * Wrap a function so that if any code inside triggers state change,
  * the changes are queued using a (macro) task instead of a microtask.
  */
-export function withMacroTask (fn: Function): Function {
-  return fn._withTask || (fn._withTask = function () {
+export function withMacroTask(fn: Function): Function {
+  return fn._withTask || (fn._withTask = function() {
     useMacroTask = true
     const res = fn.apply(null, arguments)
     useMacroTask = false
@@ -84,7 +90,7 @@ export function withMacroTask (fn: Function): Function {
   })
 }
 
-export function nextTick (cb?: Function, ctx?: Object) {
+export function nextTick(cb?: Function, ctx?: Object) {
   let _resolve
   callbacks.push(() => {
     if (cb) {

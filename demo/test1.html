@@ -6,7 +6,7 @@
 </head>
 <body>
   <div id="app">
-    {{ name }} - {{ info.age }}
+    <!--{{ name }} - {{ info.age }}-->
     <button @click='change'>change useless</button>
     <button @click='changeLast'>change last name</button>
   </div>
@@ -27,19 +27,26 @@
       methods: {
         change() {
           this.useless++
+          this.useless++
+          this.useless++
         },
         
         changeLast() {
           this.lastName = ' Zhang '
         }
       },
-      computed: {
-        name() {
-          if (this.useless > 1) {
-            return this.firstName + ',' + this.lastName
-          }
-          return 'Please click change'
+      watch: {
+        useless(newValue, oldValue) {
+          console.log(this.useless)
         }
+      },
+      computed: {
+        // name() {
+        //   if (this.useless > 1) {
+        //     return this.firstName + ',' + this.lastName
+        //   }
+        //   return 'Please click change'
+        // }
       }
     })
   </script>

@@ -56,8 +56,6 @@ function flushSchedulerQueue () {
   //    its watchers can be skipped.
   queue.sort((a, b) => a.id - b.id)
 
-  // do not cache length because more watchers might be pushed
-  // as we run existing watchers
   /* 不要将length进行缓存，因为在执行处理现有watcher对象期间，更多的watcher对象可能会被push进queue */
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
@@ -139,10 +137,10 @@ function callActivatedHooks (queue) {
  */
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id
-  if (has[id] == null) {              // 检验id是否存在，已经存在则直接跳过，不存在则标记哈希表has，用于下次检验
+  if (has[id] == null) {       // 检验id是否存在，已经存在则直接跳过，不存在则标记哈希表has，用于下次检验
     has[id] = true
     if (!flushing) {
-      queue.push(watcher)             // 如果没有flush掉，直接push到队列中即可
+      queue.push(watcher)      // 如果没有正在flush，直接push到队列中即可
     } else {
       // if already flushing, splice the watcher based on its id
       // if already past its id, it will be run next immediately.
