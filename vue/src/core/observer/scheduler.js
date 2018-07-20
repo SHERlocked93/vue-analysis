@@ -143,7 +143,7 @@ export function queueWatcher (watcher: Watcher) {
       queue.push(watcher)      // 如果没有正在flush，直接push到队列中即可
     } else {
       // if already flushing, splice the watcher based on its id
-      // if already past its id, it will be run next immediately.
+      // if already past its id, it will be run next immediately.+
       let i = queue.length - 1
       while (i > index && queue[i].id > watcher.id) {
         i--

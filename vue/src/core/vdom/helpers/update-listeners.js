@@ -25,6 +25,7 @@ const normalizeEvent = cached((name: string): {
   }
 })
 
+/* 返回一个函数，该函数的作用是将生成时的fns执行，如果fns是数组，则遍历执行它的每一项 */
 export function createFnInvoker (fns: Function | Array<Function>): Function {
   function invoker () {
     const fns = invoker.fns
@@ -42,6 +43,7 @@ export function createFnInvoker (fns: Function | Array<Function>): Function {
   return invoker
 }
 
+/* 更新监听事件 */
 export function updateListeners (
   on: Object,
   oldOn: Object,
@@ -50,10 +52,10 @@ export function updateListeners (
   vm: Component
 ) {
   let name, def, cur, old, event
-  for (name in on) {
+  for (name in on) {                        // 遍历新事件的所有方法
     def = cur = on[name]
     old = oldOn[name]
-    event = normalizeEvent(name)
+    event = normalizeEvent(name)            // 取得并去除事件的~、!、&等前缀
     /* istanbul ignore if */
     if (__WEEX__ && isPlainObject(def)) {
       cur = def.handler
@@ -74,7 +76,7 @@ export function updateListeners (
       on[name] = old
     }
   }
-  for (name in oldOn) {
+  for (name in oldOn) {                   // 移除所有旧的事件
     if (isUndef(on[name])) {
       event = normalizeEvent(name)
       remove(event.name, oldOn[name], event.capture)

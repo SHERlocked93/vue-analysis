@@ -8,7 +8,7 @@ import { isIOS, isNative } from './env'
 const callbacks = []          // 存放异步执行的回调
 let pending = false           // 一个标记位，如果已经有timerFunc被推送到任务队列中去则不需要重复推送
 
-/* 执行异步回调 */
+/* 挨个同步执行callbacks中回调 */
 function flushCallbacks() {
   pending = false
   const copies = callbacks.slice(0)
@@ -66,6 +66,8 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   const p = Promise.resolve()
   microTimerFunc = () => {
     p.then(flushCallbacks)
+    // 用Promise模拟的，但是在iOS UIWebViews中有个bug，Promise.then并不会被触发
+    // 除非浏览器中有其他事件触发，例如处理setTimeout。所以手动加了个空的setTimeout
     // in problematic UIWebViews, Promise.then doesn't completely break, but
     // it can get stuck in a weird state where callbacks are pushed into the
     // microtask queue but the queue isn't being flushed, until the browser
@@ -106,9 +108,9 @@ export function nextTick(cb?: Function, ctx?: Object) {
   if (!pending) {
     pending = true
     if (useMacroTask) {
-      macroTimerFunc()
-    } else {
-      microTimerFunc()
+      macroTimerFunc()      // 第一次调用nextTick的时候已经push了一个宏任务/微任务队列，如果没有flush掉的情况下继续往callbacks
+    } else {                // 里面添加，那么在执行这个队列的时候会执行之后添加的回调，所以这个相当于task queue的占位，占了以后
+      microTimerFunc()      // pending为true的时候可以继续往占位queue里面添加，event loop轮到这个task queue的时候将一并执行。
     }
   }
   if (!cb && typeof Promise !== 'undefined') {

@@ -53,6 +53,7 @@ function updateDOMProps (oldVnode: VNodeWithData, vnode: VNodeWithData) {
 // check platforms/web/util/attrs.js acceptValue
 type acceptValueElm = HTMLInputElement | HTMLSelectElement | HTMLOptionElement;
 
+/* 判断是否需要更新value */
 function shouldUpdateValue (elm: acceptValueElm, checkVal: string): boolean {
   return (!elm.composing && (
     elm.tagName === 'OPTION' ||
@@ -71,6 +72,7 @@ function isNotInFocusAndDirty (elm: acceptValueElm, checkVal: string): boolean {
   return notInFocus && elm.value !== checkVal
 }
 
+/* 判断与真实dom的值是否一致 */
 function isDirtyWithModifiers (elm: any, newVal: string): boolean {
   const value = elm.value
   const modifiers = elm._vModifiers // injected by v-model runtime

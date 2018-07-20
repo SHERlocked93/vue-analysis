@@ -17,8 +17,10 @@ import {
   isFalsyAttrValue
 } from 'web/util/index'
 
+/* 更新attr */
 function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   const opts = vnode.componentOptions
+  /* 如果旧的以及新的VNode节点均没有attr属性，则直接返回 */
   if (isDef(opts) && opts.Ctor.options.inheritAttrs === false) {
     return
   }
@@ -26,15 +28,15 @@ function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
     return
   }
   let key, cur, old
-  const elm = vnode.elm
-  const oldAttrs = oldVnode.data.attrs || {}
-  let attrs: any = vnode.data.attrs || {}
+  const elm = vnode.elm                           // VNode节点对应的Dom实例
+  const oldAttrs = oldVnode.data.attrs || {}      // 旧VNode节点的attr
+  let attrs: any = vnode.data.attrs || {}         // 新VNode节点的attr
   // clone observed objects, as the user probably wants to mutate it
-  if (isDef(attrs.__ob__)) {
+  if (isDef(attrs.__ob__)) {                      // 如果新的VNode的attr已经有__ob__（代表已经被Observe处理过了），进行深拷贝
     attrs = vnode.data.attrs = extend({}, attrs)
   }
 
-  for (key in attrs) {
+  for (key in attrs) {                            // 遍历attr，不一致则替换
     cur = attrs[key]
     old = oldAttrs[key]
     if (old !== cur) {
@@ -43,7 +45,6 @@ function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   }
   // #4391: in IE9, setting type can reset value for input[type=radio]
   // #6666: IE/Edge forces progress value down to 1 before setting a max
-  /* istanbul ignore if */
   if ((isIE || isEdge) && attrs.value !== oldAttrs.value) {
     setAttr(elm, 'value', attrs.value)
   }
@@ -58,6 +59,7 @@ function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
   }
 }
 
+/* 设置attr */
 function setAttr (el: Element, key: string, value: any) {
   if (el.tagName.indexOf('-') > -1) {
     baseSetAttr(el, key, value)

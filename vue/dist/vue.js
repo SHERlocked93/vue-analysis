@@ -1782,7 +1782,8 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
   macroTimerFunc = function () {
     setImmediate(flushCallbacks);
   };
-} else if (typeof MessageChannel !== 'undefined' && (
+}
+else if (typeof MessageChannel !== 'undefined' && (
   isNative(MessageChannel) ||
   // PhantomJS
   MessageChannel.toString() === '[object MessageChannelConstructor]'
@@ -1793,7 +1794,8 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
   macroTimerFunc = function () {
     port.postMessage(1);
   };
-} else {
+}
+else {
   /* istanbul ignore next */
   macroTimerFunc = function () {
     setTimeout(flushCallbacks, 0);

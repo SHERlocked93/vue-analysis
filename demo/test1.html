@@ -6,7 +6,7 @@
 </head>
 <body>
   <div id="app">
-    <!--{{ name }} - {{ info.age }}-->
+    {{ name }} - {{ info.age }}
     <button @click='change'>change useless</button>
     <button @click='changeLast'>change last name</button>
   </div>
@@ -41,12 +41,12 @@
         }
       },
       computed: {
-        // name() {
-        //   if (this.useless > 1) {
-        //     return this.firstName + ',' + this.lastName
-        //   }
-        //   return 'Please click change'
-        // }
+        name() {
+          if (this.useless > 1) {
+            return this.firstName + ',' + this.lastName
+          }
+          return 'Please click change'
+        }
       }
     })
   </script>
