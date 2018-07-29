@@ -33,14 +33,17 @@ export const emptyNode = new VNode('', {}, [])
 
 const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
 
-/*
-  判断两个VNode节点是否是同一个节点，需要满足以下条件
-  key相同
-  tag（当前节点的标签名）相同
-  isComment（是否为注释节点）相同
-  是否data（当前节点对应的对象，包含了具体的一些数据信息，是一个VNodeData类型，可以参考VNodeData类型中的数据信息）都有定义
-  当标签是<input>的时候，type必须相同
-*/
+/**
+ * 判断两个VNode节点是否是同一个节点，需要满足以下条件
+ * - key相同
+ * - tag（当前节点的标签名）相同
+ * - isComment（是否为注释节点）相同
+ * - 是否data（当前节点对应的对象，包含了具体的一些数据信息，是一个VNodeData类型，可以参考VNodeData类型中的数据信息）都有定义
+ * - 当标签是<input>的时候，type必须相同
+ * @param a
+ * @param b
+ * @returns {boolean|*}
+ */
 function sameVnode(a, b) {
   return (
     a.key === b.key && (
@@ -58,10 +61,10 @@ function sameVnode(a, b) {
   )
 }
 
-/*
-  判断当标签是<input>的时候，type是否相同
-  某些浏览器不支持动态修改<input>类型，所以他们被视为不同类型
-*/
+/**
+ * 判断当标签是<input>的时候，type是否相同
+ * 某些浏览器不支持动态修改<input>类型，所以他们被视为不同类型
+ */
 function sameInputType(a, b) {
   if (a.tag !== 'input') return true
   let i
@@ -70,11 +73,11 @@ function sameInputType(a, b) {
   return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
 }
 
-/*
-  生成一个key与旧VNode的key对应的哈希表
-  比如childre是这样的 [{xx: xx, key: 'key0'}, {xx: xx, key: 'key1'}, {xx: xx, key: 'key2'}]  beginIdx = 0   endIdx = 2
-  结果生成{key0: 0, key1: 1, key2: 2}
-*/
+/**
+ * 生成一个key与旧VNode的key对应的哈希表
+ * 比如childre是这样的 [{xx: xx, key: 'key0'}, {xx: xx, key: 'key1'}, {xx: xx, key: 'key2'}]  beginIdx = 0  endIdx = 2
+ * 结果生成{key0: 0, key1: 1, key2: 2}
+ */
 function createKeyToOldIdx(children, beginIdx, endIdx) {
   let i, key
   const map = {}
@@ -90,6 +93,7 @@ export function createPatchFunction(backend) {
   let i, j
   const cbs = {}
   
+  // modules定义了一些模块的钩子函数的实现，nodeOps封装了一系列DOM操作的方法
   const { modules, nodeOps } = backend
   
   for (i = 0; i < hooks.length; ++i) {
@@ -147,7 +151,7 @@ export function createPatchFunction(backend) {
   
   let creatingElmInVPre = 0
   
-  /* 创建一个节点 */
+  /* 通过Vnode创建真实的 DOM 并插入到它的父节点中 */
   function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested, ownerArray, index) {
     if (isDef(vnode.elm) && isDef(ownerArray)) {
       // This vnode was used in a previous render!
@@ -184,9 +188,8 @@ export function createPatchFunction(backend) {
       vnode.elm = vnode.ns
                   ? nodeOps.createElementNS(vnode.ns, tag)
                   : nodeOps.createElement(tag, vnode)
-      setScope(vnode)
+      setScope(vnode)          // 与css作用域相关
       
-      /* istanbul ignore if */
       if (__WEEX__) {
         // in Weex, the default insertion order is parent-first.
         // List items can be optimized to use children-first insertion
@@ -206,7 +209,7 @@ export function createPatchFunction(backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
-        createChildren(vnode, children, insertedVnodeQueue)
+        createChildren(vnode, children, insertedVnodeQueue)  // 先创建子节点并挂到子DOM上
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
@@ -289,6 +292,12 @@ export function createPatchFunction(backend) {
     insert(parentElm, vnode.elm, refElm)
   }
   
+  /**
+   * 调用DOM操作API插入DOM
+   * @param parent 父DOM
+   * @param elm 当前DOM
+   * @param ref 参考
+   */
   function insert(parent, elm, ref) {
     if (isDef(parent)) {
       if (isDef(ref)) {
@@ -301,6 +310,9 @@ export function createPatchFunction(backend) {
     }
   }
   
+  /**
+   * 创建子节点
+   */
   function createChildren(vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
       if (process.env.NODE_ENV !== 'production') {
@@ -753,7 +765,7 @@ export function createPatchFunction(backend) {
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
-      const isRealElement = isDef(oldVnode.nodeType)
+      const isRealElement = isDef(oldVnode.nodeType)      // 是否为真实DOM，首次渲染会进
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
         patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly)
@@ -762,7 +774,7 @@ export function createPatchFunction(backend) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform
           // a successful hydration.
-          if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) {
+          if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) { // 如果是一个元素节点
             oldVnode.removeAttribute(SSR_ATTR)
             hydrating = true
           }
@@ -782,12 +794,12 @@ export function createPatchFunction(backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
-          oldVnode = emptyNodeAt(oldVnode)
+          oldVnode = emptyNodeAt(oldVnode)            // 真实DOM转化为Vnode
         }
         
         // replacing existing element
-        const oldElm = oldVnode.elm
-        const parentElm = nodeOps.parentNode(oldElm)
+        const oldElm = oldVnode.elm                   // 原先的DOM
+        const parentElm = nodeOps.parentNode(oldElm)  // 首次渲染为#app外的body
         
         // create new node
         createElm(
@@ -830,7 +842,7 @@ export function createPatchFunction(backend) {
           }
         }
         
-        // destroy old node
+        // 删除旧节点
         if (isDef(parentElm)) {
           removeVnodes(parentElm, [oldVnode], 0, 0)
         } else if (isDef(oldVnode.tag)) {
