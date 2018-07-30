@@ -49,7 +49,7 @@ export function _createElement (
   tag?: string | Class<Component> | Function | Object,
   data?: VNodeData,
   children?: any,
-  normalizationType?: number      // 子节点规范的类型，类型不同规范的方法也不一样，它主要是参考 render 函数是编译生成还是用户手写
+  normalizationType?: number   // 子节点规范的类型，类型不同规范的方法也不一样，主要是参考render函数是编译生成还是用户手写
 ): VNode | Array<VNode> {
   if (isDef(data) && isDef((data: any).__ob__)) {         // 不允许data是响应式的
     process.env.NODE_ENV !== 'production' && warn(
@@ -115,8 +115,8 @@ export function _createElement (
       )
     }
   } else {
-    // direct component options / constructor
-    vnode = createComponent(tag, data, context, children)
+    // direct component options / constructor 如果tag非string则创建组件
+    vnode = createComponent(tag, data, context, children)     // createComponent位于src/core/vdom/create-component.js
   }
   if (Array.isArray(vnode)) {
     return vnode

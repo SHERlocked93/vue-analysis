@@ -35,7 +35,7 @@ import {
 // inline hooks to be invoked on component VNodes during patch
 /* 被用来在VNode组件patch期间触发的钩子函数集合 */
 const componentVNodeHooks = {
-  init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
+  init(vnode: VNodeWithData, hydrating: boolean): ?boolean {
     if (
       vnode.componentInstance &&
       !vnode.componentInstance._isDestroyed &&
@@ -52,8 +52,8 @@ const componentVNodeHooks = {
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
-
-  prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
+  
+  prepatch(oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
     const child = vnode.componentInstance = oldVnode.componentInstance
     updateChildComponent(
@@ -64,8 +64,8 @@ const componentVNodeHooks = {
       options.children // new children
     )
   },
-
-  insert (vnode: MountedComponentVNode) {
+  
+  insert(vnode: MountedComponentVNode) {
     const { context, componentInstance } = vnode
     if (!componentInstance._isMounted) {
       componentInstance._isMounted = true
@@ -84,8 +84,8 @@ const componentVNodeHooks = {
       }
     }
   },
-
-  destroy (vnode: MountedComponentVNode) {
+  
+  destroy(vnode: MountedComponentVNode) {
     const { componentInstance } = vnode
     if (!componentInstance._isDestroyed) {
       if (!vnode.data.keepAlive) {
@@ -100,8 +100,8 @@ const componentVNodeHooks = {
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
 /* 创建一个组件节点，返回Vnode节点 */
-export function createComponent (
-  Ctor: Class<Component> | Function | Object | void,
+export function createComponent(
+  Ctor: Class<Component> | Function | Object | void,  // 子组件构造器
   data: ?VNodeData,
   context: Component,
   children: ?Array<VNode>,
@@ -110,15 +110,14 @@ export function createComponent (
   if (isUndef(Ctor)) {
     return
   }
-
-  const baseCtor = context.$options._base               // Vue
-
-  // plain options object: turn it into a constructor
-  // 转化为构造器
+  
+  const baseCtor = context.$options._base       // Vue
+  
+  // plain options object: turn it into a constructor 转化为构造器
   if (isObject(Ctor)) {
-    Ctor = baseCtor.extend(Ctor)
+    Ctor = baseCtor.extend(Ctor)     // Vue.extend
   }
-
+  
   // if at this stage it's not a constructor or an async component factory,
   // reject.
   if (typeof Ctor !== 'function') {
@@ -127,8 +126,8 @@ export function createComponent (
     }
     return
   }
-
-  // async component
+  
+  // async component 异步组件
   let asyncFactory
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor
@@ -146,37 +145,37 @@ export function createComponent (
       )
     }
   }
-
+  
   data = data || {}
-
+  
   // resolve constructor options in case global mixins are applied after
   // component constructor creation
   resolveConstructorOptions(Ctor)
-
+  
   // transform component v-model data into props & events
   if (isDef(data.model)) {
     transformModel(Ctor.options, data)
   }
-
+  
   // extract props
   const propsData = extractPropsFromVNodeData(data, Ctor, tag)
-
-  // functional component
+  
+  // functional component 函数组件
   if (isTrue(Ctor.options.functional)) {
     return createFunctionalComponent(Ctor, propsData, data, context, children)
   }
-
+  
   // extract listeners, since these needs to be treated as
   // child component listeners instead of DOM listeners
   const listeners = data.on
   // replace with listeners with .native modifier
   // so it gets processed during parent component patch.
   data.on = data.nativeOn
-
+  
   if (isTrue(Ctor.options.abstract)) {
     // abstract components do not keep anything
     // other than props & listeners & slot
-
+    
     // work around flow
     const slot = data.slot
     data = {}
@@ -184,11 +183,11 @@ export function createComponent (
       data.slot = slot
     }
   }
-
+  
   // install component management hooks onto the placeholder node
   installComponentHooks(data)
-
-  // return a placeholder vnode
+  
+  // return a placeholder vnode 占位vnode
   const name = Ctor.options.name || tag
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
@@ -196,25 +195,24 @@ export function createComponent (
     { Ctor, propsData, listeners, tag, children },
     asyncFactory
   )
-
+  
   // Weex specific: invoke recycle-list optimized @render function for
   // extracting cell-slot template.
   // https://github.com/Hanks10100/weex-native-directive/tree/master/component
-  /* istanbul ignore if */
   if (__WEEX__ && isRecyclableComponent(vnode)) {
     return renderRecyclableComponentTemplate(vnode)
   }
-
+  
   return vnode
 }
 
-export function createComponentInstanceForVnode (
+export function createComponentInstanceForVnode(
   vnode: any, // we know it's MountedComponentVNode but flow doesn't
-  parent: any, // activeInstance in lifecycle state
+  parent: any // activeInstance in lifecycle state
 ): Component {
   const options: InternalComponentOptions = {
     _isComponent: true,
-    _parentVnode: vnode,
+    _parentVnode: vnode,    // 占位节点
     parent
   }
   // check inline-template render functions
@@ -226,7 +224,11 @@ export function createComponentInstanceForVnode (
   return new vnode.componentOptions.Ctor(options)
 }
 
-function installComponentHooks (data: VNodeData) {
+/**
+ * 装载组件钩子
+ * @param data
+ */
+function installComponentHooks(data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i]
@@ -238,7 +240,7 @@ function installComponentHooks (data: VNodeData) {
   }
 }
 
-function mergeHook (f1: any, f2: any): Function {
+function mergeHook(f1: any, f2: any): Function {
   const merged = (a, b) => {
     // flow complains about extra args which is why we use any
     f1(a, b)
@@ -250,7 +252,7 @@ function mergeHook (f1: any, f2: any): Function {
 
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
-function transformModel (options, data: any) {
+function transformModel(options, data: any) {
   const prop = (options.model && options.model.prop) || 'value'
   const event = (options.model && options.model.event) || 'input'
   ;(data.props || (data.props = {}))[prop] = data.model.value
