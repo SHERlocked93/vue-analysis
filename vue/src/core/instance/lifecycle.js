@@ -59,8 +59,8 @@ export function lifecycleMixin(Vue: Class<Component>) {
     const prevEl = vm.$el
     const prevVnode = vm._vnode
     const prevActiveInstance = activeInstance
-    activeInstance = vm
-    vm._vnode = vnode
+    activeInstance = vm                   // 当前激活的vm实例
+    vm._vnode = vnode                     // 组件的渲染vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
@@ -79,6 +79,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
       vm.$el.__vue__ = vm
     }
     // if parent is an HOC, update its $el as well
+    // _vnode为组件的占位vnode
     if (vm.$vnode && vm.$parent && vm.$vnode === vm.$parent._vnode) {
       vm.$parent.$el = vm.$el
     }
