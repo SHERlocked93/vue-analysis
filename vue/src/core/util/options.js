@@ -416,7 +416,6 @@ export function resolveAsset (
   id: string,
   warnMissing?: boolean
 ): any {
-  /* istanbul ignore if */
   if (typeof id !== 'string') {
     return
   }

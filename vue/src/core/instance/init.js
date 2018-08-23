@@ -32,7 +32,7 @@ export function initMixin(Vue: Class<Component>) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
-      initInternalComponent(vm, options)
+      initInternalComponent(vm, options)          // 组件初始化相关的options合并
     } else {                                      // 是new出来的实例
       vm.$options = mergeOptions(                 // 通过合并策略，将parent与child进行了合并
         resolveConstructorOptions(vm.constructor),
@@ -68,6 +68,11 @@ export function initMixin(Vue: Class<Component>) {
   }
 }
 
+/**
+ * 组件内的options合并
+ * @param vm
+ * @param options
+ */
 export function initInternalComponent(vm: Component, options: InternalComponentOptions) {
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.

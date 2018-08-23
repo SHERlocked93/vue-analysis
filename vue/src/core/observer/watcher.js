@@ -168,8 +168,8 @@ export default class Watcher {
   /* Subscriber接口，当依赖发生改变的时候进行回调 */
   update() {
     if (this.computed) {
-      // 一个computed watcher有两种模式：activated lazy(默认)。vm.$options = mergeOptions(
-      // 只有当它被至少一个订阅者依赖时才置activated，这通常是另一个计算属性或组件的render function。
+      // 一个computed watcher有两种模式：activated lazy(默认)
+      // 只有当它被至少一个订阅者依赖时才置activated，这通常是另一个计算属性或组件的render function
       if (this.dep.subs.length === 0) {       // 如果没人订阅这个计算属性的变化
         // lazy时，我们希望它只在必要时执行计算，所以我们只是简单地将观察者标记为dirty
         // 当计算属性被访问时，实际的计算在this.evaluate()中执行

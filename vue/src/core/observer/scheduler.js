@@ -16,7 +16,7 @@ const queue: Array<Watcher> = []
 const activatedChildren: Array<Component> = []
 let has: { [key: number]: ?true } = {}
 let circular: { [key: number]: number } = {}          // 循环更新
-let waiting = false
+let waiting = false                                   // 用来标记 flushSchedulerQueue 是否已经传递给 nextTick 的标记位
 let flushing = false
 let index = 0
 

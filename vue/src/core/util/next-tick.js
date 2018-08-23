@@ -80,6 +80,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 }
 
 /**
+ * 强制使用宏任务
  * Wrap a function so that if any code inside triggers state change,
  * the changes are queued using a (macro) task instead of a microtask.
  */
