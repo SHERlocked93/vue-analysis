@@ -47,3 +47,14 @@
 分析了 Vuex 的实现原理，深入分析了它的初始化过程，常用 API 以及插件部分的实现。
 
 
+
+---
+
+PS： 在下的 [掘金专栏](https://juejin.im/user/5962fe1d6fb9a06bac5b9899/posts)、[SegmentFault专栏](https://segmentfault.com/blog/sherlocked93)，也欢迎大家关注我的公众号【前端下午茶】，一起加油~
+
+![](https://i.loli.net/2019/05/31/5cf08a479cd5d75372.jpg)
+
+
+另外可以加入「前端下午茶交流群」微信群，长按识别下面二维码即可加我好友，备注**加群**，我拉你入群～
+
+![](https://i.loli.net/2019/07/13/5d2986f77e9bc11533.jpg)
